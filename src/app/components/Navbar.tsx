@@ -18,7 +18,7 @@ const Navbar = () => {
   const [maxPrice, setMaxPrice] = useState(1000);
   const { data: categories } = useGetProductsCategoriesQuery();
 
-  console.log("categories", categories); 
+  console.log("categories", categories);
 
   const {
     data: products,
@@ -279,7 +279,6 @@ const Navbar = () => {
             </div>
 
             <div className="space-y-2">
-             
               <div className="max-h-[60vh] overflow-y-auto overflow-x-hidden pb-4">
                 {categories?.map((cat: string) => (
                   <button
@@ -314,10 +313,8 @@ const Navbar = () => {
                 ))}
               </div>
 
-              {/* Scroll indicator */}
               <div className="sticky bottom-0 bg-gradient-to-t from-white dark:from-gray-800 to-transparent h-8 pointer-events-none" />
 
-              {/* Selected category preview */}
               {category && (
                 <div className="px-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                   <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
