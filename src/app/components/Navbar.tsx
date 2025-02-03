@@ -1,7 +1,13 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { ShoppingCart, Search, Menu, X, SlidersHorizontal } from "lucide-react";
 import DarkModeToggle from "./DarkModeToggle";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setCategory,
+  setPriceRange,
+  setQuery,
+} from "../redux/slices/filterSlice";
 import {
   useGetProductsCategoriesQuery,
   useSearchProductsQuery,
@@ -12,40 +18,36 @@ const Navbar = () => {
   const [cartCount] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
 
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("");
-  const [minPrice, setMinPrice] = useState(1);
-  const [maxPrice, setMaxPrice] = useState(1000);
+  const dispatch = useDispatch();
+  const filters = useSelector((state: any) => state.filters);
+//   console.log(filters,'//////////////////')
   const { data: categories } = useGetProductsCategoriesQuery();
 
-  console.log("categories", categories);
-
-  const {
-    data: products,
-    error,
-    isLoading,
-  } = useSearchProductsQuery({
-    query,
-    category: category || undefined,
-    minPrice: minPrice || undefined,
-    maxPrice: maxPrice || undefined,
+  const { data: products } = useSearchProductsQuery({
+    query: filters.query,
+    category: filters.category,
+    minPrice: filters.minPrice,
+    maxPrice: filters.maxPrice,
   });
-
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {}, 500);
-    return () => clearTimeout(timeoutId);
-  }, [query]);
-
-  const handleSearch = (e: any) => {
-    setQuery(e.target.value);
+ 
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(setQuery(e.target.value));
   };
 
   const handleCategorySelect = (selectedCategory: string) => {
-    setCategory(selectedCategory === category ? "" : selectedCategory);
+    dispatch(
+      setCategory(selectedCategory === filters.category ? "" : selectedCategory)
+    );
   };
 
-  console.log("products", products?.products);
+  const handlePriceChange = (type: "min" | "max", value: number) => {
+    const newMin = type === "min" ? value : filters.minPrice;
+    const newMax = type === "max" ? value : filters.maxPrice;
+    dispatch(setPriceRange({ min: newMin, max: newMax }));
+  };
+  console.log(categories)
 
+//   return <h1>Testing</h1>
   return (
     <nav className="bg-white dark:bg-gray-800 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -63,7 +65,7 @@ const Navbar = () => {
             <div className="relative">
               <input
                 type="text"
-                value={query}
+                value={filters.query}
                 onChange={handleSearch}
                 placeholder="Search for products..."
                 className="w-full px-4 py-2 rounded-full border border-gray-300 
@@ -81,29 +83,27 @@ const Navbar = () => {
                 <Search className="h-5 w-5 text-gray-400" />
               </div>
 
-              {products?.products &&
-                products?.products.length > 0 &&
-                query.length >= 2 && (
-                  <div className="absolute w-full mt-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg z-50">
-                    {products?.products.slice(0, 5).map((result: any) => (
-                      <div
-                        key={result.id}
-                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-                        onClick={() => {
-                          setCategory(result);
-                          setQuery("");
-                        }}
-                      >
-                        <div className="font-medium text-gray-900 dark:text-white">
-                          {result.title}
-                        </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-300">
-                          {result.availabilityStatus}
-                        </div>
+              {products?.products?.length > 0 && filters.query.length >= 2 && (
+                <div className="absolute w-full mt-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg z-50">
+                  {products.products.slice(0, 5).map((result: any) => (
+                    <div
+                      key={result.id}
+                      className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                      onClick={() => {
+                        dispatch(setCategory(result.category));
+                        dispatch(setQuery(""));
+                      }}
+                    >
+                      <div className="font-medium text-gray-900 dark:text-white">
+                        {result.title}
                       </div>
-                    ))}
-                  </div>
-                )}
+                      <div className="text-sm text-gray-600 dark:text-gray-300">
+                        {result.price}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {showFilters && (
@@ -116,16 +116,20 @@ const Navbar = () => {
                     <div className="flex items-center space-x-2">
                       <input
                         type="number"
-                        value={minPrice}
-                        onChange={(e) => setMinPrice(Number(e.target.value))}
+                        value={filters.minPrice}
+                        onChange={(e) =>
+                          handlePriceChange("min", Number(e.target.value))
+                        }
                         className="w-24 px-2 py-1 rounded border dark:bg-gray-700 dark:border-gray-600"
                         placeholder="Min"
                       />
                       <span className="text-gray-500">-</span>
                       <input
                         type="number"
-                        value={maxPrice}
-                        onChange={(e) => setMaxPrice(Number(e.target.value))}
+                        value={filters.maxPrice}
+                        onChange={(e) =>
+                          handlePriceChange("max", Number(e.target.value))
+                        }
                         className="w-24 px-2 py-1 rounded border dark:bg-gray-700 dark:border-gray-600"
                         placeholder="Max"
                       />
@@ -199,14 +203,14 @@ const Navbar = () => {
                       key={cat}
                       onClick={() => handleCategorySelect(cat)}
                       className={`p-3 text-sm rounded-lg transition-all flex items-center
-            ${
-              category === cat
-                ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-semibold"
-                : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:translate-x-1"
-            }`}
+                        ${
+                          filters.category === cat
+                            ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-semibold"
+                            : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:translate-x-1"
+                        }`}
                     >
                       {cat}
-                      {category === cat && (
+                      {filters.category === cat && (
                         <svg
                           className="w-4 h-4 ml-2 text-blue-500"
                           fill="none"
@@ -244,7 +248,7 @@ const Navbar = () => {
             <div className="relative mb-4">
               <input
                 type="text"
-                value={query}
+                value={filters.query}
                 onChange={handleSearch}
                 placeholder="Search for products..."
                 className="w-full px-4 py-2 rounded-full border border-gray-300 
@@ -262,16 +266,20 @@ const Navbar = () => {
               <div className="flex items-center space-x-2">
                 <input
                   type="number"
-                  value={minPrice}
-                  onChange={(e) => setMinPrice(Number(e.target.value))}
+                  value={filters.minPrice}
+                  onChange={(e) =>
+                    handlePriceChange("min", Number(e.target.value))
+                  }
                   className="w-24 px-2 py-1 rounded border dark:bg-gray-700 dark:border-gray-600"
                   placeholder="Min"
                 />
                 <span className="text-gray-500">-</span>
                 <input
                   type="number"
-                  value={maxPrice}
-                  onChange={(e) => setMaxPrice(Number(e.target.value))}
+                  value={filters.maxPrice}
+                  onChange={(e) =>
+                    handlePriceChange("max", Number(e.target.value))
+                  }
                   className="w-24 px-2 py-1 rounded border dark:bg-gray-700 dark:border-gray-600"
                   placeholder="Max"
                 />
@@ -287,14 +295,14 @@ const Navbar = () => {
                     className={`flex items-center justify-between w-full px-4 py-3 
                    text-left rounded-xl mx-2 mb-1 transition-all
                    ${
-                     category === cat
+                     filters.category === cat
                        ? "bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300"
                        : "bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
                    }`}
                   >
                     <span className="text-sm font-medium">{cat}</span>
 
-                    {category === cat && (
+                    {filters.category === cat && (
                       <svg
                         className="w-5 h-5 text-blue-500 ml-2 shrink-0"
                         fill="none"
@@ -315,13 +323,13 @@ const Navbar = () => {
 
               <div className="sticky bottom-0 bg-gradient-to-t from-white dark:from-gray-800 to-transparent h-8 pointer-events-none" />
 
-              {category && (
+              {filters.category && (
                 <div className="px-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                   <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
                     Selected category:
                   </div>
                   <div className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                    {category}
+                    {filters.category}
                   </div>
                 </div>
               )}

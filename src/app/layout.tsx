@@ -26,8 +26,9 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning={true} lang="en">
       <body
+        suppressHydrationWarning={true}
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
+      >
         <ReduxWrapper>
           <>
             <Navbar />
