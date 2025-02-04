@@ -1,16 +1,19 @@
 "use client";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   useSearchProductsQuery,
   useGetProductsByCategoryQuery,
-  useGetProductsQuery,
+  useGetProductsQuery, 
 } from "./services/productApi";
 import Card from "./components/Card";
 import { useState, useEffect } from "react";
+import { addItem } from "./redux/slices/cartSlice";
 
 export default function Home() {
   const filters = useSelector((state: any) => state.filters);
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const dispatch = useDispatch();
+ 
 
   const { data: searchData, isLoading: isSearchLoading } =
     useSearchProductsQuery({ query: filters.query }, { skip: !filters.query });
@@ -85,13 +88,37 @@ export default function Home() {
     );
   }
 
+  const onAddToCartFn = async (product: any) => {
+    try {
+      
+      dispatch(
+        addItem({
+          id: product.id,
+          title: product.title,
+          price: product.price,
+          description: product.description,
+          thumbnail: product.thumbnail,
+          discountPercentage: product.discountPercentage,
+          quantity: 1,
+        })
+      );
+      // console.log("here here", product);
+    } catch (error) {
+      console.error("Faildde", error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-4 sm:px-6 lg:px-8 py-8">
         {filteredProducts.map((product: any) => (
-          <Card key={product.id} product={product} onAddToCart={product.id} />
+          <Card
+            key={product.id}
+            product={product}
+            onAddToCart={() => onAddToCartFn(product)}
+          />
         ))}
-      </div>
+      </div> 
     </div>
   );
 }

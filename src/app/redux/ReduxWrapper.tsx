@@ -7,7 +7,7 @@ import { ThemeProvider } from "next-themes";
 const ReduxWrapper = ({ children }: any) => {
   return (
     <ThemeProvider attribute='class' defaultTheme='system' enableSystem >
-      <Provider store={store}>{children}</Provider>;
+      <Provider store={store}>{children}</Provider>
     </ThemeProvider>
   );
 };

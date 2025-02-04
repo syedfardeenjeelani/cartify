@@ -18,8 +18,7 @@ export const productApi = createApi({
     }),
     getProductsByCategory: builder.query({
       query: (category) => `/products/category/${encodeURIComponent(category)}`,
-    }),
-    
+    }), 
   }),
 });
 
@@ -28,5 +27,6 @@ export const {
   useGetProductByIdQuery,
   useGetProductsCategoriesQuery,
   useSearchProductsQuery,
-  useGetProductsByCategoryQuery,
+  useGetProductsByCategoryQuery, 
+
 } = productApi;

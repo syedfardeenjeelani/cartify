@@ -1,14 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface FilterState {
-  query: string;
-  category: string;
-  minPrice: number;
-  maxPrice: number;
-  rating: number;
-}
 
-const initialState: FilterState = {
+const initialState :any = {
   query: "",
   category: "",
   minPrice: 0,
@@ -20,10 +13,10 @@ const filterSlice = createSlice({
   name: "filters",
   initialState,
   reducers: {
-    setQuery: (state, action: PayloadAction<string>) => {
+    setQuery: (state, action: any) => {
       state.query = action.payload;
     },
-    setCategory: (state, action: PayloadAction<string>) => {
+    setCategory: (state, action: any) => {
       state.category = action.payload;
     },
     setPriceRange: (

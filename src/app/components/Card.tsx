@@ -1,5 +1,6 @@
 import React from "react";
 import { Star } from "lucide-react";
+import Link from "next/link";
 
 interface CardProps {
   product: any;
@@ -78,7 +79,7 @@ const Card = ({ product, onAddToCart }: CardProps) => {
           </div>
 
           <button
-            onClick={() => onAddToCart(product.id)}
+            onClick={() => onAddToCart(product)}
             disabled={product.stock <= 0}
             className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
               product.stock > 0
@@ -88,8 +89,11 @@ const Card = ({ product, onAddToCart }: CardProps) => {
           >
             {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
           </button>
+          <Link href={`/product/${product.id}`}>
+            <button> inside </button>
+          </Link>
         </div>
-      </div> 
+      </div>
     </div>
   );
 };

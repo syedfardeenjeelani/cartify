@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useEffect, useState } from "react";
+import React, {useCallback, useEffect, useState } from "react";
 import { ShoppingCart, Search, Menu, X, SlidersHorizontal } from "lucide-react";
 import DarkModeToggle from "./DarkModeToggle";
 import { debounce } from "lodash";
@@ -9,21 +9,27 @@ import {
   setPriceRange,
   setQuery,
 } from "../redux/slices/filterSlice";
-import {
+import { 
   useGetProductsCategoriesQuery,
   useSearchProductsQuery,
 } from "../services/productApi";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [cartCount] = useState(1);
+  const cartItems = useSelector((state: any) => state.cart.items);
+  const cartCount = cartItems.reduce(
+    (sum: number, item: any) => sum + item.quantity,
+    0
+  );
   const [showFilters, setShowFilters] = useState(false);
   const [hidden, setHidden] = useState(false);
-  const dispatch = useDispatch();
+  const dispatch  = useDispatch();
   const filters = useSelector((state: any) => state.filters);
   //   console.log(filters,'//////////////////')
   const { data: categories } = useGetProductsCategoriesQuery();
-
+  
   const { data: products } = useSearchProductsQuery({
     query: filters.query,
     category: filters.category,
@@ -32,7 +38,7 @@ const Navbar = () => {
   });
 
   const debouncedDispatch = useCallback(
-    debounce((value: string) => {
+    debounce((value :any) => {
       dispatch(setQuery(value));
     }, 1000),
     [dispatch]
@@ -50,31 +56,36 @@ const Navbar = () => {
     setHidden(false);
   };
 
-  const handleCategorySelect = (selectedCategory: string) => {
+  const handleCategorySelect = (selectedCategory: any) => {
     dispatch(
       setCategory(selectedCategory === filters.category ? "" : selectedCategory)
     );
   };
 
-  const handlePriceChange = (type: "min" | "max", value: number) => {
-    const newMin = type === "min" ? value : filters.minPrice;
-    const newMax = type === "max" ? value : filters.maxPrice;
+  const handlePriceChange = (type: "min" | "max", value :any) => {
+    const newMin: any = type === "min" ? value : filters.minPrice;
+    const newMax: any = type === "max" ? value : filters.maxPrice;
     dispatch(setPriceRange({ min: newMin, max: newMax }));
   };
   //   console.log(categories)
 
   //   return <h1>Testing</h1>
+ 
+// console.log("carts number here ///////////",carts)
+
+  const pathName = usePathname();
+  console.log(pathName,'url is here')
   return (
     <nav className="bg-white dark:bg-gray-800 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex-shrink-0">
-            <span
+            <Link href='/'
               className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 
                            text-transparent bg-clip-text"
             >
               Cartify
-            </span>
+            </Link>
           </div>
 
           <div className="hidden md:block flex-1 max-w-2xl mx-8">
@@ -126,7 +137,7 @@ const Navbar = () => {
                 )}
             </div>
 
-            {showFilters && (
+            {showFilters && pathName == '/' && (
               <div className="absolute mt-2 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg border dark:border-gray-700 z-50">
                 <div className="space-y-4">
                   <div>
@@ -162,7 +173,7 @@ const Navbar = () => {
 
           <div className="hidden md:flex items-center space-x-6">
             <DarkModeToggle />
-            <button className="relative group">
+            <Link href='/cart' className="relative group">
               <ShoppingCart
                 className="h-6 w-6 text-gray-600 dark:text-gray-300 
                                     group-hover:text-blue-500 transition-colors"
@@ -176,7 +187,7 @@ const Navbar = () => {
                   {cartCount}
                 </span>
               )}
-            </button>
+            </Link>
           </div>
 
           <div className="md:hidden flex items-center space-x-4">
@@ -195,7 +206,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      <div className="hidden md:block border-t dark:border-gray-700">
+     {pathName == '/' && <div className="hidden md:block border-t dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-8">
             <div className="relative group">
@@ -260,7 +271,7 @@ const Navbar = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> }
 
       {isOpen && (
         <div className="md:hidden border-t dark:border-gray-700">
