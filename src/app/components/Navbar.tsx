@@ -287,7 +287,7 @@ const Navbar = () => {
             <div className="relative mb-4">
               <input
                 type="text"
-                value={filters.query}
+                // value={filters.query}
                 onChange={handleSearch}
                 placeholder="Search for products..."
                 className="w-full px-4 py-2 rounded-full border border-gray-300 
@@ -374,7 +374,7 @@ const Navbar = () => {
               )}
             </div>
 
-            <button
+            <Link href="/cart"
               className="mt-4 w-full flex items-center justify-between px-3 
                              py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 
                              dark:hover:bg-gray-700 rounded-lg"
@@ -384,7 +384,7 @@ const Navbar = () => {
                 <ShoppingCart className="h-5 w-5 mr-2" />
                 <span>{cartCount} items</span>
               </div>
-            </button>
+            </Link>
           </div>
         </div>
       )}
