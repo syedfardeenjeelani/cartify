@@ -11,6 +11,8 @@ import {
   Scale,
   WalletCards,
 } from "lucide-react";
+import { useDispatch } from "react-redux"
+import { addItem } from "../../redux/slices/cartSlice";
 
 export default function ProductPage({
   params,
@@ -49,6 +51,26 @@ export default function ProductPage({
     (p: any) => p.id == resolvedParams.id
   );
   // console.log(product)
+  const dispatch =  useDispatch()
+    const onAddToCartFn = async (product: any) => {
+      console.log(product,'aasdasdsa')
+      try {
+        dispatch(
+          addItem({
+            id: product.id,
+            title: product.title,
+            price: product.price,
+            description: product.description,
+            thumbnail: product.thumbnail,
+            discountPercentage: product.discountPercentage,
+            quantity: 1,
+          })
+        ); 
+      } catch (error) {
+        console.error("Faildde", error);
+      }
+    };
+  
   return (
     product && (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
@@ -192,20 +214,10 @@ export default function ProductPage({
 
               <div className="sticky bottom-0 bg-white dark:bg-gray-800 pt-6 border-t dark:border-gray-700">
                 <div className="flex space-x-4">
-                  <div className="flex items-center border dark:border-gray-700 rounded-lg px-4">
-                    <button className="px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                      -
-                    </button>
-                    <input
-                      type="number"
-                      defaultValue="1"
-                      className="w-16 text-center bg-transparent dark:text-white"
-                    />
-                    <button className="px-3 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                      +
-                    </button>
-                  </div>
-                  <button className="flex-1 bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 text-white py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center">
+                  <button
+                    onClick={() => onAddToCartFn(product)}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 text-white py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center"
+                  >
                     <WalletCards className="w-5 h-5 mr-2" />
                     Add to Cart
                   </button>

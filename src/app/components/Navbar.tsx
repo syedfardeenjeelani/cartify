@@ -28,14 +28,21 @@ const Navbar = () => {
   const dispatch  = useDispatch();
   const filters = useSelector((state: any) => state.filters);
   //   console.log(filters,'//////////////////')
-  const { data: categories } = useGetProductsCategoriesQuery();
-  
-  const { data: products } = useSearchProductsQuery({
-    query: filters.query,
-    category: filters.category,
-    minPrice: filters.minPrice,
-    maxPrice: filters.maxPrice,
+  const { data: categories } = useGetProductsCategoriesQuery(undefined, {
+    pollingInterval: 5000,
   });
+  
+  const { data: products } = useSearchProductsQuery(
+    {
+      query: filters.query,
+      category: filters.category,
+      minPrice: filters.minPrice,
+      maxPrice: filters.maxPrice,
+    },
+    {
+      pollingInterval: 5000,
+    }
+  );
 
   const debouncedDispatch = useCallback(
     debounce((value :any) => {

@@ -90,7 +90,9 @@ const Card = ({ product, onAddToCart }: CardProps) => {
             {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
           </button>
           <Link href={`/product/${product.id}`}>
-            <button> inside </button>
+            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">
+              View Details
+            </button>
           </Link>
         </div>
       </div>
