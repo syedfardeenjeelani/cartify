@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Cartify - Advanced Product Catalog with Dynamic Filtering and Real-Time Updates
 
-## Getting Started
+## 🚀 Overview
+Cartify is an advanced e-commerce product catalog that allows users to browse, filter, and view products dynamically. It features a shopping cart with real-time product availability updates, built with **Next.js**, **RTK Query** for API polling, and **Redux Toolkit** for state management.
 
-First, run the development server:
+## 🎯 Features Implemented
+### ✅ Product Catalog
+- Fetches and displays a list of products with:
+  - **Name**
+  - **Description**
+  - **Price**
+  - **Image**
+  - **Stock Status**
+- Supports **pagination** for handling large datasets.
+- Each product has an **Add to Cart** button.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### ✅ Dynamic Filtering
+- Users can filter products by:
+  - **Category**
+  - **Price Range** 
+- **Real-time updates**: Filtering updates the product list instantly without reloading the page.
+- Well-designed filter UI for **desktop and mobile views**.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### ✅ Shopping Cart
+- Users can **add/remove** products.
+- **Cart summary** displays:
+  - Number of items
+  - Total price
+- **Persistent cart state** using Redux, maintaining cart items across pages.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### ✅ Real-Time Product Availability
+- Implemented **RTK Query polling** to check if products are in stock.
+- Shows "**Product Out of Stock**" if unavailable. 
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### ✅ Product Detail Page
+- Clicking on a product navigates to a **detailed page** with:
+  - Large image
+  - Detailed description
+  - Price, rating, stock status and description 
 
-## Learn More
+### ✅ UI/UX Design (TailwindCSS)
+- Fully **responsive design** for mobile, tablet, and desktop.
+- Styled using **TailwindCSS** 
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### ✅ State Management (Redux + RTK Query)
+- **Redux Toolkit** for managing global state (cart items, total price, filters).
+- **RTK Query** for efficient API fetching and polling.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🎁 Bonus Features Implemented
+- **Search Autocomplete**: Provides suggestions as users type in the search bar.
+- **Dark/Light Mode Toggle**: Users can switch between dark and light themes using Tailwind's dark mode utilities.
 
-## Deploy on Vercel
+## 🛠️ Tech Stack
+- **Next.js** - Frontend framework
+- **Redux Toolkit & RTK Query** - State management and API polling
+- **TailwindCSS** - Styling and responsiveness
+- **DummyJSON API** - Mock API for product data
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📦 Installation & Setup
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/syedfardeenjeelani/cartify.git
+   cd cartify
+   ```
+2. Install dependencies:
+   ```sh
+   npm install  # or yarn install
+   ```
+3. Start the development server:
+   ```sh
+   npm run dev  # or yarn dev
+   ```
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🌍 Live Demo
+[Cartify Live Demo](https://cartify-six.vercel.app/)  
+ 
