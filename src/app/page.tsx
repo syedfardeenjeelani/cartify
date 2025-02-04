@@ -3,34 +3,67 @@ import { useSelector } from "react-redux";
 import {
   useSearchProductsQuery,
   useGetProductsByCategoryQuery,
+  useGetProductsQuery,
 } from "./services/productApi";
 import Card from "./components/Card";
+import { useState, useEffect } from "react";
 
 export default function Home() {
   const filters = useSelector((state: any) => state.filters);
+  const [filteredProducts, setFilteredProducts] = useState([]);
 
   const { data: searchData, isLoading: isSearchLoading } =
-    useSearchProductsQuery(
-      { query: filters.query },
-      { skip: !!filters.category }
-    );
+    useSearchProductsQuery({ query: filters.query }, { skip: !filters.query });
 
   const { data: categoryData, isLoading: isCategoryLoading } =
     useGetProductsByCategoryQuery(filters.category, {
       skip: !filters.category,
     });
 
-  const products = filters.category
-    ? categoryData?.products
-    : searchData?.products;
+  const { data: allProductsData, isLoading: isAllProductsLoading } =
+    useGetProductsQuery(undefined, {
+      skip: filters.category || filters.query,
+    });
 
-  const filteredProducts = products?.filter((product: any) => {
-    return (
-      product.price >= filters.minPrice && product.price <= filters.maxPrice
+  useEffect(() => {
+    let results = [];
+
+    if (filters.category && filters.query) {
+      const categoryProducts = categoryData?.products || [];
+      results = categoryProducts.filter(
+        (product: any) =>
+          product.title.toLowerCase().includes(filters.query.toLowerCase()) ||
+          product.description
+            .toLowerCase()
+            .includes(filters.query.toLowerCase()) ||
+          product.brand?.toLowerCase().includes(filters.query.toLowerCase())
+      );
+    } else if (filters.category) {
+      results = categoryData?.products || [];
+    } else if (filters.query) {
+      results = searchData?.products || [];
+    } else {
+      results = allProductsData?.products || [];
+    }
+
+    const priceFiltered = results.filter(
+      (product: any) =>
+        product.price >= filters.minPrice && product.price <= filters.maxPrice
     );
-  });
 
-  const isLoading = isSearchLoading || isCategoryLoading;
+    setFilteredProducts(priceFiltered);
+  }, [
+    filters.query,
+    filters.category,
+    categoryData,
+    searchData,
+    allProductsData,
+    filters.minPrice,
+    filters.maxPrice,
+  ]);
+
+  const isLoading =
+    isSearchLoading || isCategoryLoading || isAllProductsLoading;
 
   if (isLoading) {
     return (

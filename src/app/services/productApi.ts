@@ -14,11 +14,12 @@ export const productApi = createApi({
       query: (id) => `/products/${id}`,
     }),
     searchProducts: builder.query({
-      query: ({ query }) => `/products/search?q=${query}`,
+      query: ({ query }) => `/products/search?q=${query || ""}`,
     }),
     getProductsByCategory: builder.query({
-      query: (category) => `/products/category/${category}`,
+      query: (category) => `/products/category/${encodeURIComponent(category)}`,
     }),
+    
   }),
 });
 

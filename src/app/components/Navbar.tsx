@@ -1,7 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { ShoppingCart, Search, Menu, X, SlidersHorizontal } from "lucide-react";
 import DarkModeToggle from "./DarkModeToggle";
+import { debounce } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setCategory,
@@ -17,10 +18,10 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [cartCount] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
-
+  const [hidden, setHidden] = useState(false);
   const dispatch = useDispatch();
   const filters = useSelector((state: any) => state.filters);
-//   console.log(filters,'//////////////////')
+  //   console.log(filters,'//////////////////')
   const { data: categories } = useGetProductsCategoriesQuery();
 
   const { data: products } = useSearchProductsQuery({
@@ -29,9 +30,24 @@ const Navbar = () => {
     minPrice: filters.minPrice,
     maxPrice: filters.maxPrice,
   });
- 
+
+  const debouncedDispatch = useCallback(
+    debounce((value: string) => {
+      dispatch(setQuery(value));
+    }, 1000),
+    [dispatch]
+  );
+
+  useEffect(() => {
+    return () => {
+      debouncedDispatch.cancel();
+    };
+  }, [debouncedDispatch]);
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setQuery(e.target.value));
+    const value = e.target.value;
+    debouncedDispatch(value);
+    setHidden(false);
   };
 
   const handleCategorySelect = (selectedCategory: string) => {
@@ -45,9 +61,9 @@ const Navbar = () => {
     const newMax = type === "max" ? value : filters.maxPrice;
     dispatch(setPriceRange({ min: newMin, max: newMax }));
   };
-  console.log(categories)
+  //   console.log(categories)
 
-//   return <h1>Testing</h1>
+  //   return <h1>Testing</h1>
   return (
     <nav className="bg-white dark:bg-gray-800 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -65,7 +81,7 @@ const Navbar = () => {
             <div className="relative">
               <input
                 type="text"
-                value={filters.query}
+                // value={filters.query}
                 onChange={handleSearch}
                 placeholder="Search for products..."
                 className="w-full px-4 py-2 rounded-full border border-gray-300 
@@ -83,27 +99,31 @@ const Navbar = () => {
                 <Search className="h-5 w-5 text-gray-400" />
               </div>
 
-              {products?.products?.length > 0 && filters.query.length >= 2 && (
-                <div className="absolute w-full mt-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg z-50">
-                  {products.products.slice(0, 5).map((result: any) => (
-                    <div
-                      key={result.id}
-                      className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-                      onClick={() => {
-                        dispatch(setCategory(result.category));
-                        dispatch(setQuery(""));
-                      }}
-                    >
-                      <div className="font-medium text-gray-900 dark:text-white">
-                        {result.title}
+              {!hidden &&
+                products?.products?.length > 0 &&
+                filters.query.length >= 2 && (
+                  <div className="absolute w-full mt-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg z-50">
+                    {products.products.slice(0, 5).map((result: any) => (
+                      <div
+                        key={result.id}
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                        onClick={() => {
+                          // dispatch(setCategory(result.category));
+                          dispatch(setQuery(result.title));
+                          // dispatch(setQuery(""));
+                          setHidden(!hidden);
+                        }}
+                      >
+                        <div className="font-medium text-gray-900 dark:text-white">
+                          {result.title}
+                        </div>
+                        <div className="text-sm text-gray-600 dark:text-gray-300">
+                          {result.price}
+                        </div>
                       </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-300">
-                        {result.price}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+                    ))}
+                  </div>
+                )}
             </div>
 
             {showFilters && (
