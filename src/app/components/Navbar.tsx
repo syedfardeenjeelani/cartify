@@ -64,6 +64,7 @@ const Navbar = () => {
   };
 
   const handleCategorySelect = (selectedCategory: any) => {
+    
     dispatch(
       setCategory(selectedCategory === filters.category ? "" : selectedCategory)
     );

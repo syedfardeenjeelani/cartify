@@ -13,7 +13,7 @@ import { addItem } from "./redux/slices/cartSlice";
 export default function Home() {
   const filters = useSelector((state: any) => state.filters);
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
+ const [currentPage, setCurrentPage] = useState(1);
   const dispatch = useDispatch();
 
   const { data: searchData, isLoading: isSearchLoading } =
@@ -61,6 +61,7 @@ export default function Home() {
     );
 
     setFilteredProducts(priceFiltered);
+    setCurrentPage(1)
   }, [
     filters.query,
     filters.category,
